@@ -1,0 +1,443 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>CLICKER_App</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            -webkit-user-select: none;
+            -moz-user-select: none;
+            -ms-user-select: none;
+            user-select: none;
+            -webkit-tap-highlight-color: transparent;
+            -webkit-touch-callout: none;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            transition: all 0.5s ease;
+            padding: 20px;
+            touch-action: manipulation;
+            overflow-x: hidden;
+        }
+
+        body.light {
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+        }
+
+        body.dark {
+            background: #1A1A1A;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 400px;
+            text-align: center;
+        }
+
+        .icon-image {
+            width: 250px;
+            height: 250px;
+            border-radius: 50%;
+            object-fit: cover;
+            margin-bottom: 20px;
+            transition: all 0.5s ease;
+        }
+
+        body.dark .icon-image {
+            box-shadow: 0 8px 25px rgba(0, 230, 118, 0.5),
+                        0 0 40px rgba(0, 230, 118, 0.3);
+            border: 3px solid #00E676;
+        }
+
+        body.light .icon-image {
+            box-shadow: 0 8px 25px rgba(41, 121, 255, 0.4),
+                        0 0 30px rgba(41, 121, 255, 0.2);
+            border: 3px solid #2979FF;
+        }
+
+        .title {
+            font-size: 2.5rem;
+            font-weight: bold;
+            margin-bottom: 30px;
+            letter-spacing: 8px;
+            transition: all 0.5s ease;
+        }
+
+        body.dark .title {
+            color: #E0E0E0;
+            text-shadow: 2px 2px 8px rgba(0,0,0,0.5);
+        }
+
+        body.light .title {
+            color: #2d3436;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.1);
+        }
+
+        .counter-container {
+            padding: 30px;
+            border-radius: 25px;
+            margin-bottom: 30px;
+            transition: all 0.5s ease;
+        }
+
+        body.dark .counter-container {
+            background: linear-gradient(145deg, #242424, #1e1e1e);
+            box-shadow: 0 20px 60px rgba(0,0,0,0.6);
+        }
+
+        body.light .counter-container {
+            background: linear-gradient(145deg, #ffffff, #f8f9fa);
+            box-shadow: 0 20px 60px rgba(0,0,0,0.15);
+        }
+
+        .counter-display {
+            display: flex;
+            justify-content: center;
+            gap: 5px;
+            margin-bottom: 30px;
+            direction: ltr;
+        }
+
+        .digit {
+            width: 70px;
+            height: 70px;
+            border-radius: 15px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+            overflow: hidden;
+            transition: all 0.5s ease;
+        }
+
+        body.dark .digit {
+            background: linear-gradient(145deg, #00E676, #00C853);
+            box-shadow: 
+                inset 0 2px 5px rgba(0,0,0,0.3),
+                0 5px 20px rgba(0, 230, 118, 0.5),
+                0 0 30px rgba(0, 230, 118, 0.3);
+            border: 2px solid #00E676;
+        }
+
+        body.light .digit {
+            background: linear-gradient(145deg, #2979FF, #1565C0);
+            box-shadow: 
+                inset 0 2px 5px rgba(255,255,255,0.3),
+                0 5px 20px rgba(41, 121, 255, 0.4),
+                0 0 30px rgba(41, 121, 255, 0.2);
+            border: 2px solid #2979FF;
+        }
+
+        .digit::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: linear-gradient(180deg, 
+                rgba(255,255,255,0.2) 0%, 
+                rgba(255,255,255,0) 50%,
+                rgba(0,0,0,0.1) 100%);
+            pointer-events: none;
+        }
+
+        .digit-number {
+            font-size: 2.5rem;
+            font-weight: bold;
+            position: relative;
+            z-index: 1;
+            transition: all 0.5s ease;
+        }
+
+        body.dark .digit-number {
+            color: #000000;
+            text-shadow: 0 2px 4px rgba(0,0,0,0.4);
+        }
+
+        body.light .digit-number {
+            color: #FFFFFF;
+            text-shadow: 0 2px 8px rgba(255,255,255,0.6);
+        }
+
+        .digit.animate .digit-number {
+            animation: flip 0.4s ease;
+        }
+
+        @keyframes flip {
+            0% { transform: rotateX(0deg); }
+            50% { transform: rotateX(90deg); opacity: 0; }
+            51% { transform: rotateX(-90deg); opacity: 0; }
+            100% { transform: rotateX(0deg); opacity: 1; }
+        }
+
+        .click-btn {
+            width: 100%;
+            height: 80px;
+            border: none;
+            border-radius: 15px;
+            font-size: 1.5rem;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin-bottom: 20px;
+        }
+
+        body.dark .click-btn {
+            background: #000000;
+            color: #00E676;
+            box-shadow: 0 8px 25px rgba(0, 230, 118, 0.5),
+                        0 0 40px rgba(0, 230, 118, 0.3),
+                        inset 0 0 20px rgba(0, 230, 118, 0.1);
+            border: 2px solid #00E676;
+        }
+
+        body.light .click-btn {
+            background: #FFFFFF;
+            color: #2979FF;
+            box-shadow: 0 8px 25px rgba(41, 121, 255, 0.4),
+                        0 0 30px rgba(41, 121, 255, 0.2);
+            border: 2px solid #2979FF;
+        }
+
+        body.dark .click-btn:active {
+            transform: scale(0.95);
+            box-shadow: 0 4px 15px rgba(0, 230, 118, 0.5),
+                        0 0 25px rgba(0, 230, 118, 0.4);
+        }
+
+        body.light .click-btn:active {
+            transform: scale(0.95);
+            box-shadow: 0 4px 15px rgba(41, 121, 255, 0.5),
+                        0 0 25px rgba(41, 121, 255, 0.3);
+        }
+
+        .controls {
+            display: flex;
+            gap: 75px;
+            justify-content: center;
+        }
+
+        .control-btn {
+            width: 60px;
+            height: 60px;
+            border: none;
+            border-radius: 35%;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            backdrop-filter: blur(10px);
+        }
+
+        body.dark .control-btn {
+            background: #000000;
+            border: 2px solid #00E676;
+            box-shadow: 0 0 20px rgba(0, 230, 118, 0.3);
+        }
+
+        body.light .control-btn {
+            background: #FFFFFF;
+            border: 2px solid #2979FF;
+            box-shadow: 0 0 20px rgba(41, 121, 255, 0.25);
+        }
+
+        body.dark .control-btn:hover {
+            background: #0a0a0a;
+            box-shadow: 0 0 30px rgba(0, 230, 118, 0.5);
+            transform: translateY(-2px);
+        }
+
+        body.light .control-btn:hover {
+            background: #f8f9fa;
+            box-shadow: 0 0 30px rgba(41, 121, 255, 0.4);
+            transform: translateY(-2px);
+        }
+
+        .control-btn:active {
+            transform: scale(0.95);
+        }
+
+        .control-btn svg {
+            width: 30px;
+            height: 30px;
+            transition: all 0.5s ease;
+        }
+
+        body.dark .control-btn svg {
+            fill: #00E676;
+            filter: drop-shadow(0 0 8px rgba(0, 230, 118, 0.6));
+        }
+
+        body.light .control-btn svg {
+            fill: #2979FF;
+            filter: drop-shadow(0 0 8px rgba(41, 121, 255, 0.5));
+        }
+
+        .reset-btn svg {
+            fill: none;
+            stroke-width: 2;
+        }
+
+        body.dark .reset-btn svg {
+            stroke: #00E676;
+            filter: drop-shadow(0 0 8px rgba(0, 230, 118, 0.6));
+        }
+
+        body.light .reset-btn svg {
+            stroke: #2979FF;
+            filter: drop-shadow(0 0 8px rgba(41, 121, 255, 0.5));
+        }
+
+        .footer {
+            margin-top: 5px;
+            padding: 5px;
+            text-align: center;
+        }
+
+        .footer p {
+            font-size: 1rem;
+            font-weight: 400;
+            line-height: 1.6;
+            opacity: 0.7;
+        }
+
+        body.dark .footer p {
+            color: #B0B0B0;
+        }
+
+        body.light .footer p {
+            color: #5a6c7d;
+        }
+
+        @media (max-width: 400px) {
+            .digit {
+                width: 60px;
+                height: 60px;
+            }
+            
+            .digit-number {
+                font-size: 2rem;
+            }
+
+            .title {
+                font-size: 2rem;
+                letter-spacing: 5px;
+            }
+
+            .footer p {
+                font-size: 0.8rem;
+            }
+        }
+    
+    </style>
+</head>
+<body class="dark">
+    <div class="container">
+        <img src="icon.jpg" alt="Icon" class="icon-image">
+        
+        <div class="counter-container">
+            <div class="counter-display" id="counter">
+                <div class="digit" data-position="3"><span class="digit-number">0</span></div>
+                <div class="digit" data-position="2"><span class="digit-number">0</span></div>
+                <div class="digit" data-position="1"><span class="digit-number">0</span></div>
+                <div class="digit" data-position="0"><span class="digit-number">0</span></div>
+            </div>
+
+            <button class="click-btn" id="clickBtn">اللهم اغفر له وارحمه</button>
+
+            <div class="controls">
+                <button class="control-btn reset-btn" id="resetBtn">
+                    <svg viewBox="0 0 24 24">
+                        <path d="M17.65 6.35C16.2 4.9 14.21 4 12 4c-4.42 0-7.99 3.58-7.99 8s3.57 8 7.99 8c3.73 0 6.84-2.55 7.73-6h-2.08c-.82 2.33-3.04 4-5.65 4-3.31 0-6-2.69-6-6s2.69-6 6-6c1.66 0 3.14.69 4.22 1.78L13 11h7V4l-2.35 2.35z"/>
+                    </svg>
+                </button>
+                <button class="control-btn theme-btn" id="themeBtn">
+                    <svg viewBox="0 0 24 24" id="themeIcon">
+                        <path d="M12 7c-2.76 0-5 2.24-5 5s2.24 5 5 5 5-2.24 5-5-2.24-5-5-5zM2 13h2c.55 0 1-.45 1-1s-.45-1-1-1H2c-.55 0-1 .45-1 1s.45 1 1 1zm18 0h2c.55 0 1-.45 1-1s-.45-1-1-1h-2c-.55 0-1 .45-1 1s.45 1 1 1zM11 2v2c0 .55.45 1 1 1s1-.45 1-1V2c0-.55-.45-1-1-1s-1 .45-1 1zm0 18v2c0 .55.45 1 1 1s1-.45 1-1v-2c0-.55-.45-1-1-1s-1 .45-1 1zM5.99 4.58c-.39-.39-1.03-.39-1.41 0-.39.39-.39 1.03 0 1.41l1.06 1.06c.39.39 1.03.39 1.41 0s.39-1.03 0-1.41L5.99 4.58zm12.37 12.37c-.39-.39-1.03-.39-1.41 0-.39.39-.39 1.03 0 1.41l1.06 1.06c.39.39 1.03.39 1.41 0 .39-.39.39-1.03 0-1.41l-1.06-1.06zm1.06-10.96c.39-.39.39-1.03 0-1.41-.39-.39-1.03-.39-1.41 0l-1.06 1.06c-.39.39-.39 1.03 0 1.41s1.03.39 1.41 0l1.06-1.06zM7.05 18.36c.39-.39.39-1.03 0-1.41-.39-.39-1.03-.39-1.41 0l-1.06 1.06c-.39.39-.39 1.03 0 1.41s1.03.39 1.41 0l1.06-1.06z"/>
+                    </svg>
+                </button>
+            </div>
+        </div>
+
+        <div class="footer">
+            <p>هذا العمل خالص لوجه الله تعالي علي روح (أحمد أبو طالب)</p>
+        </div>
+    </div>
+
+    <script>
+        let count = 0;
+        const maxCount = 9999;
+
+        const clickBtn = document.getElementById('clickBtn');
+        const resetBtn = document.getElementById('resetBtn');
+        const themeBtn = document.getElementById('themeBtn');
+        const body = document.body;
+        const digits = document.querySelectorAll('.digit');
+
+        function updateDisplay() {
+            const countStr = count.toString().padStart(4, '0');
+            digits.forEach((digit, index) => {
+                const digitSpan = digit.querySelector('.digit-number');
+                const newValue = countStr[index];
+                
+                if (digitSpan.textContent !== newValue) {
+                    digit.classList.add('animate');
+                    setTimeout(() => {
+                        digitSpan.textContent = newValue;
+                    }, 150);
+                    setTimeout(() => {
+                        digit.classList.remove('animate');
+                    }, 400);
+                }
+            });
+        }
+
+        clickBtn.addEventListener('click', () => {
+            if (count < maxCount) {
+                count++;
+                updateDisplay();
+                
+                // Haptic feedback if available
+                if (navigator.vibrate) {
+                    navigator.vibrate(10);
+                }
+            }
+        });
+
+        resetBtn.addEventListener('click', () => {
+            count = 0;
+            updateDisplay();
+            
+            if (navigator.vibrate) {
+                navigator.vibrate([50, 50, 50]);
+            }
+        });
+
+        themeBtn.addEventListener('click', () => {
+            body.classList.toggle('dark');
+            body.classList.toggle('light');
+            
+            const icon = document.getElementById('themeIcon');
+            if (body.classList.contains('light')) {
+                icon.innerHTML = '<path d="M9 2c-1.05 0-2.05.16-3 .46 4.06 1.27 7 5.06 7 9.54 0 4.48-2.94 8.27-7 9.54.95.3 1.95.46 3 .46 5.52 0 10-4.48 10-10S14.52 2 9 2z"/>';
+            } else {
+                icon.innerHTML = '<path d="M12 7c-2.76 0-5 2.24-5 5s2.24 5 5 5 5-2.24 5-5-2.24-5-5-5zM2 13h2c.55 0 1-.45 1-1s-.45-1-1-1H2c-.55 0-1 .45-1 1s.45 1 1 1zm18 0h2c.55 0 1-.45 1-1s-.45-1-1-1h-2c-.55 0-1 .45-1 1s.45 1 1 1zM11 2v2c0 .55.45 1 1 1s1-.45 1-1V2c0-.55-.45-1-1-1s-1 .45-1 1zm0 18v2c0 .55.45 1 1 1s1-.45 1-1v-2c0-.55-.45-1-1-1s-1 .45-1 1zM5.99 4.58c-.39-.39-1.03-.39-1.41 0-.39.39-.39 1.03 0 1.41l1.06 1.06c.39.39 1.03.39 1.41 0s.39-1.03 0-1.41L5.99 4.58zm12.37 12.37c-.39-.39-1.03-.39-1.41 0-.39.39-.39 1.03 0 1.41l1.06 1.06c.39.39 1.03.39 1.41 0 .39-.39.39-1.03 0-1.41l-1.06-1.06zm1.06-10.96c.39-.39.39-1.03 0-1.41-.39-.39-1.03-.39-1.41 0l-1.06 1.06c-.39.39-.39 1.03 0 1.41s1.03.39 1.41 0l1.06-1.06zM7.05 18.36c.39-.39.39-1.03 0-1.41-.39-.39-1.03-.39-1.41 0l-1.06 1.06c-.39.39-.39 1.03 0 1.41s1.03.39 1.41 0l1.06-1.06z"/>';
+            }
+        });
+
+        // Initialize display
+        updateDisplay();
+    </script>
+</body>
+</html>
